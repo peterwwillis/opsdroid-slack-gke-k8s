@@ -1,0 +1,51 @@
+welcome-message: false
+
+logging:
+  # path: ~/.opsdroid/output.log
+  level: debug
+  console: true
+
+connectors:
+  slack:
+    # required
+    bot-token: $SLACK_BOT_TOKEN
+
+    # Optional
+
+    # when socket-mode is true, you need to set also an `app-token`
+    socket-mode: true # defaul true.
+    app-token: $SLACK_APP_TOKEN
+
+    # In order for bot-name and/or icon-emoji to work, the `chat:write.customize`
+    # scope will have to be selected
+    bot-name: "opsdroid-slack-gke-k8s" # default "opsdroid"
+    icon-emoji: ":robot_face:" # default ":robot_face:"
+
+    default-room: "#opsdroid_app" # default "#general"
+
+    # If set to true opsdroid will start a thread when replying to a message
+    start-thread: false # default false
+
+    # Used to retrieve the conversations details from Slack API
+    # refresh-interval: how often the connector will refresh the channels
+    refresh-interval: 600 # default 600
+
+    # channel-limit: Maximum channels to return on a single iteration.
+    # if your instance has >1000 channels, consider raising this
+    # (https://api.slack.com/methods/conversations.list#arg_limit)
+    channel-limit: 100 # default 100. ***
+
+skills:
+  devtools: {}
+  ping:
+    path: /chatops/skills/ping.py
+  k8s-gke:
+    path: /chatops/skills/k8s-gke
+    no-cache: true # Delete any existing cached version of the skill
+    no-dep: true # Do not try to install requirements.txt on start-up
+
+
+# databases:
+#   sqlite:
+#     path: "/root/.config/opsdroid/messages.db"
+

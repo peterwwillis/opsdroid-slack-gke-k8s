@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opsdroid-slack-gke-k8s
+  namespace: default
+  labels:
+    app: opsdroid-slack-gke-k8s
+spec:
+  selector:
+    matchLabels:
+      app: opsdroid-slack-gke-k8s
+  template:
+    metadata:
+      labels:
+        app: opsdroid-slack-gke-k8s
+    spec:
+      containers:
+        - name: opsdroid-slack-gke-k8s
+          image: gcr.io/my-project/opsdroid-slack-gke-k8s:${ENV}-${CIRCLE_TAG}
+          imagePullPolicy: IfNotPresent
+          #ports:
+          #  - containerPort: 8080
+          volumeMounts:
+            - name: gcloud-auth-credentials
+              mountPath: /secrets/gcp
+              readOnly: true
+          env:
+            - name: ENV
+              valueFrom:
+                secretKeyRef:
+                  name: env
+                  key: ENV
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /secrets/gcp/service-account.json
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-bot-opsdroid-slack-gke-k8s
+                  key: SLACK_BOT_TOKEN
+            - name: SLACK_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-bot-opsdroid-slack-gke-k8s
+                  key: SLACK_APP_TOKEN
+          #readinessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: 8080
+          #livenessProbe:
+          #  httpGet:
+          #    path: /
+           #   port: 9008
+      volumes:
+        - name: gcloud-auth-credentials
+          secret:
+            secretName: gcloud-auth-credentials
